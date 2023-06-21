@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -27,6 +28,11 @@ import com.automation.AccountsPages.AccountsEditPage;
 import com.automation.AccountsPages.AccountsPage;
 import com.automation.AccountsPages.NewAccountsPage;
 import com.automation.HomePages.HomePage;
+import com.automation.MySettingsPages.CalendarAndReminder;
+import com.automation.MySettingsPages.CustomizeMyTabPage;
+import com.automation.MySettingsPages.EmailSettingsPage;
+import com.automation.MySettingsPages.LoginHistoryPage;
+import com.automation.MySettingsPages.SettingsPage;
 import com.automation.LoginPages.CheckMailPage;
 import com.automation.LoginPages.ForgotPasswordPage;
 import com.automation.LoginPages.LoginPage;
@@ -168,6 +174,111 @@ public class AutomationScripts extends BaseTest {
 		List<String> expectedDropdown = new ArrayList<String>(Arrays.asList("My Profile", "My Settings",
 				"Developer Console", "Switch to Lightning Experience", "Logout"));
 		Assert.assertEquals(actualDropdown, expectedDropdown);
+	}
+	@Test
+	public void user_Menu_MySettings_07() throws InterruptedException {
+		PropertiesUtility pro =new PropertiesUtility();
+		Properties appProp = pro.loadFile("applicationDataProperties");
+		String userId = appProp.getProperty("login.valid.userid");
+		String password = appProp.getProperty("login.valid.password");
+		LoginPage loginPage = new LoginPage(driver);
+		loginPage.checkTitle("Login | Salesforce");
+		loginPage.enterUserName(userId);
+		loginPage.enterPassword(password);
+		loginPage.checkRememberMe();
+		driver = loginPage.clickLoginButton();
+
+		/// should pass the updated driver
+		HomePage homePage = new HomePage(driver);
+		Thread.sleep(2000);
+		homePage.checkTitle("Home Page ~ Salesforce - Developer Edition");
+		homePage.waitForMenuToBeClickable();
+		homePage.clickUserMenu();
+		/// Selecting My Settings from Usermenu
+		driver=homePage.clickonMySettings();
+		SettingsPage settingsPage = new SettingsPage(driver);
+		settingsPage.checkTitle("Hello, P Jan! ~ Salesforce - Developer Edition");
+		settingsPage.waitForPageLoad(80);
+		Thread.sleep(4000);
+		// Personal tab options
+		settingsPage.clickOnPersonalTab();
+		driver=settingsPage.clickOnLoginHistory();
+		LoginHistoryPage loginHistoryPage = new LoginHistoryPage(driver);
+		loginHistoryPage.checkTitle("Login History ~ Salesforce - Developer Edition");
+		driver=loginHistoryPage.clickOnDownloadLink();
+		
+		/// Display and Layout options
+		SettingsPage settingsPage1 = new SettingsPage(driver);
+		settingsPage1.clickOnDisplayLayoutTab();
+		driver=settingsPage.clickOnCustomizeMyTab();
+		CustomizeMyTabPage customizeMyTabPage = new CustomizeMyTabPage(driver);
+		customizeMyTabPage.selectSalesForceChatterFromDropDown();
+		customizeMyTabPage.selectReportsfromAvailableTab();
+		customizeMyTabPage.clickOnAddButton();
+		driver=customizeMyTabPage.clickOnSaveButton();
+		SettingsPage settingsPage2 = new SettingsPage(driver);
+		settingsPage2.checkTitle("Hello, P Jan! ~ Salesforce - Developer Edition");
+		
+		/// reverting the changes
+		settingsPage2.clickOnDisplayLayoutTabAgain();
+		driver=settingsPage2.clickOnCustomizeMyTabAgain();
+		CustomizeMyTabPage customizeMyTabPage1 = new CustomizeMyTabPage(driver);
+		customizeMyTabPage1.selectSalesForceChatterFromDropDownAgain();
+		customizeMyTabPage1.selectReportsfromSelectedTab();
+		customizeMyTabPage1.clickOnRemoveButton();
+		driver= customizeMyTabPage1.clickOnSaveButtonAgain();
+		SettingsPage settingsPage3 = new SettingsPage(driver);
+
+		// Email options
+		settingsPage3.clickOnEmailTab();
+		driver = settingsPage3.clickOnEmailSettings();
+		EmailSettingsPage emailSettingsPage = new EmailSettingsPage(driver);
+		driver = emailSettingsPage.selectBccRadioButton();
+		
+		// Calendar and Remainders options
+		SettingsPage settingsPage4 = new SettingsPage(driver);
+		settingsPage4.clickOnCalendarAndReminder();
+		driver=settingsPage4.clickOnActivityReminder();
+		CalendarAndReminder calendarAndReminder = new CalendarAndReminder(driver);
+		
+		calendarAndReminder.verifyTittle("Activity Reminders ~ Salesforce - Developer Edition");
+		calendarAndReminder.clickOnOpenTestRemainder();
+		
+	}
+	@Test
+
+	public void user_Menu_DeveloperConsole_08() throws InterruptedException {
+		PropertiesUtility pro =new PropertiesUtility();
+		Properties appProp = pro.loadFile("applicationDataProperties");
+		String userId = appProp.getProperty("login.valid.userid");
+		String password = appProp.getProperty("login.valid.password");
+		LoginPage loginPage = new LoginPage(driver);
+		loginPage.checkTitle("Login | Salesforce");
+		loginPage.enterUserName(userId);
+		loginPage.enterPassword(password);
+		loginPage.checkRememberMe();
+		driver = loginPage.clickLoginButton();
+
+		/// should pass the updated driver
+		HomePage homePage = new HomePage(driver);
+		Thread.sleep(2000);
+		homePage.checkTitle("Home Page ~ Salesforce - Developer Edition");
+		homePage.waitForMenuToBeClickable();
+		homePage.clickUserMenu();
+
+		String baseWindowHandle = homePage.getBaseWindowHandle();
+				
+		/// Selecting from Developer Console
+		homePage.clickOndeveloperConsole();
+		
+		Set<String> allWindowHandles = homePage.getAllWindowHandles();
+		homePage.switchToDriverConsole(baseWindowHandle,allWindowHandles);		
+		
+		String actualHomeTitle = homePage.getPagetitle();
+		String expectedHomeTitle = "Developer Console";
+		Assert.assertEquals(actualHomeTitle, expectedHomeTitle);
+		closeBrowser();
+
 	}
 	
 	@Test

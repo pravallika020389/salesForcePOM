@@ -2,6 +2,7 @@ package com.automation.HomePages;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -19,7 +20,8 @@ public class HomePage extends BasePage {
 	@FindBy(linkText="Logout")WebElement logout;
 	@FindBy(id="userNav-menuItems")WebElement userMenuOptions;
 	@FindBy(linkText="Accounts")WebElement accountsOption;
-	
+	@FindBy(linkText="My Settings")WebElement mySettings;
+	@FindBy(linkText="Developer Console")WebElement developerConsole;
 	
 	public HomePage(WebDriver driver) {
 		super(driver);
@@ -66,6 +68,35 @@ public class HomePage extends BasePage {
 
 	public WebDriver clickOnAccountsTab() {
 		clickOnElement(accountsOption, "Accounts Option");
+		return driver;
+	}
+
+	public WebDriver clickonMySettings() {
+		clickOnElement(mySettings, "My Settings");
+		return driver;
+	}
+
+	public String getBaseWindowHandle() {
+		return driver.getWindowHandle();
+	}
+
+	public void clickOndeveloperConsole() throws InterruptedException {
+		clickOnElement(developerConsole, "Developer Console");
+		Thread.sleep(4000);
+	}
+
+	public Set<String> getAllWindowHandles() {
+		// TODO Auto-generated method stub
+		return driver.getWindowHandles();
+	}
+
+	public WebDriver switchToDriverConsole(String baseWindowHandle, Set<String> allWindowHandles) {
+		for (String handle : allWindowHandles) {
+			if (!baseWindowHandle.equals(handle)) {
+				switchToWindow(handle);
+				break;
+			}
+		}
 		return driver;
 	}
 	
